@@ -26,12 +26,36 @@ public class MainActivity extends Activity {
     private ImageView picture;
 
     private Uri imageUri;
+
+    private Button chooseFromAlbum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button takephoto = (Button) findViewById(R.id.take_photo);
         ImageView picture = (ImageView) findViewById(R.id.picture);
+        chooseFromAlbum = (Button) findViewById(R.id.choose_from_album);
+        chooseFromAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File outputImage = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try {
+                    if (outputImage.exists()){
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage);
+                Intent intent = new Intent("android.intent.acton.GET_CONTENT");
+                intent.setType("image/*");
+                intent.putExtra("crop", true);
+                intent.putExtra("scale", true);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                startActivityForResult(intent,CROP_PHOTO);
+            }
+        });
         takephoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
